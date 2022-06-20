@@ -1,6 +1,7 @@
 #ifndef UTILS_H_
 #define UTILS_H_
 
+#include <bits/chrono.h>
 #include <cassert>
 #include <chrono>
 #include <iostream>
@@ -11,13 +12,9 @@ namespace TimeUtil {
 
 class TimeStamper {
 public:
-
-    using ms = std::chrono::milliseconds;
-    using ns = std::chrono::nanoseconds;
-    using clock = std::chrono::steady_clock;
-    using time_point = clock::time_point;
-    using period = clock::period;
+    using clock = std::chrono::high_resolution_clock;
     using duration = clock::duration;
+    using time_point = clock::time_point;
     struct time_interval { time_point start; time_point end; };
 
     TimeStamper() = default;
@@ -30,7 +27,7 @@ public:
 
     void end();
 
-    time_point get();
+    double get();
 
 private:
     Status m_status { Status::Stopped };
@@ -148,9 +145,10 @@ inline void TimeStamper::end()
 }
 
 
-inline TimeStamper::time_point TimeStamper::get() {
-    return clock::now();
+inline double TimeStamper::get() {
+    std::chrono::duration< double, std::milli > ret = clock::now() - time_started;
     ++n_stamps;
+    return ret.count();
 }
 
 
